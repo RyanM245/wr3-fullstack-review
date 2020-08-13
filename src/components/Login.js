@@ -1,7 +1,79 @@
-import React from 'react'
+import React from "react";
+import axios from 'axios'
 
-const Login = () => {
-    return <div>This is the login page</div>
+class Login extends React.Component {
+constructor(){
+    super()
+    this.state = {
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        newUser: false
+    }
 }
 
-export default Login
+toggle = () => {
+    this.setState({
+        newUser: !this.state.newUser
+    })
+}
+
+changeHandler= (e) => {
+    this.setState({
+        [e.target.name]: e.target.value
+    })
+}
+
+login = () => {
+    const {email, password} = this.state
+    axios.post(`/auth/login`, {email,password}).then(res => {
+        this.props.history.push(`/front_page`)
+    }).catch(err => {
+        console.log(err)
+        alert(`Login Failed`)
+    })
+}
+
+register = () => {
+    const {email,password,firstName,lastName} = this.state;
+    axios.post(`/auth/register`, {email,password,firstName,lastName}).then(res => {
+        this.props.history.push(`/front_page`)
+    }).catch(err => {
+        console.log(err)
+        alert(`Register Failed`)
+    })
+}
+
+  render() {
+      const {email,password, firstName, lastName} = this.state
+    return <div className = 'login'>
+        <div className = 'login-container'>
+            <h1>Welcome!</h1>
+            {!this.state.newUser ?
+            <div>
+            <input onChange={e => this.changeHandler(e)} name= 'email' type = 'text' value={email} placeholder='email...'/>    
+            <input onChange={e => this.changeHandler(e)} name= 'password' type = 'password' value={password} placeholder='password...'/>
+            <div className = "btn-container">
+                <button onClick = {this.login}>Login</button>
+                <button onClick = {this.toggle}>Sign Up</button>
+            </div>  
+            </div>
+            :
+            <div>
+            <input onChange={e => this.changeHandler(e)} name= 'firstName' type = 'text' value={firstName} placeholder='First Name...'/>    
+            <input onChange={e => this.changeHandler(e)} name= 'lastName' type = 'text' value={lastName} placeholder='Last Name...'/>    
+            <input onChange={e => this.changeHandler(e)} name= 'email' type = 'text' value={email} placeholder='email...'/>    
+            <input onChange={e => this.changeHandler(e)} name= 'password' type = 'password' value={password} placeholder='password...'/>
+            <div className = "btn-container">
+                <button onClick = { this.register}>Register</button>
+                <button onClick = {this.toggle} > I already have an account</button>
+            </div>  
+            </div>
+        }
+        </div>
+    </div>;
+  }
+}
+
+export default Login;
